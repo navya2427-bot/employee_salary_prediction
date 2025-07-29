@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Salary Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-section h2 {
+            color: #4a5568;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .analytics-section {
+            display: grid;
+            gap: 30px;
+        }
+
+        .analytics-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .analytics-card h3 {
+            color: #4a5568;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .analytics-card p {
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            text-align: center;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .chart-container img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .result.success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            animation: resultAppear 0.5s ease-out;
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3);
+        }
+
+        .result.error {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            animation: resultAppear 0.5s ease-out;
+        }
+
+        @keyframes resultAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .icon {
+            color: #667eea;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .form-section, .analytics-card {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header fade-in">
+            <h1><i class="fas fa-brain icon"></i> AI Salary Predictor</h1>
+            <p>Advanced machine learning model to predict salary ranges based on demographic and professional factors</p>
+        </header>
+
+        <div class="main-content">
+            <div class="form-section fade-in">
+                <h2><i class="fas fa-user-tie icon"></i> Personal Information</h2>
+                <form id="predictionForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="age"><i class="fas fa-calendar-alt"></i> Age (18 or older):</label>
+                            <input type="number" id="age" name="age" min="18" max="100" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender"><i class="fas fa-venus-mars"></i> Gender:</label>
+                            <select id="gender" name="gender" required>
+                                <option value="" disabled selected>Select Gender</option>
+                                <option value="female">Female</option>
+                                <option value="male">Male</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="race"><i class="fas fa-globe"></i> Race:</label>
+                            <select id="race" name="race" required>
+                                <option value="" disabled selected>Select Race</option>
+                                <option value="amer-indian-eskimo">American Indian Eskimo</option>
+                                <option value="asian-pac-islander">Asian Pacific Islander</option>
+                                <option value="black">Black</option>
+                                <option value="other">Other</option>
+                                <option value="white">White</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maritalStatus"><i class="fas fa-heart"></i> Marital Status:</label>
+                            <select id="maritalStatus" name="maritalStatus" required>
+                                <option value="" disabled selected>Select Marital Status</option>
+                                <option value="divorced">Divorced</option>
+                                <option value="married-af-spouse">Married (Armed Forces Spouse)</option>
+                                <option value="married-civ-spouse">Married (Civilian Spouse)</option>
+                                <option value="married-spouse-absent">Married (Spouse Absent)</option>
+                                <option value="never-married">Never Married</option>
+                                <option value="separated">Separated</option>
+                                <option value="widowed">Widowed</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="relationship"><i class="fas fa-users"></i> Relationship:</label>
+                            <select id="relationship" name="relationship" required>
+                                <option value="" disabled selected>Select Relationship</option>
+                                <option value="husband">Husband</option>
+                                <option value="not-in-family">Not in Family</option>
+                                <option value="other-relative">Other Relative</option>
+                                <option value="own-child">Own Child</option>
+                                <option value="unmarried">Unmarried</option>
+                                <option value="wife">Wife</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="education"><i class="fas fa-graduation-cap"></i> Education:</label>
+                            <select id="education" name="education" required>
+                                <option value="" disabled selected>Select Education</option>
+                                <option value="7th-8th">7th-8th Grade</option>
+                                <option value="9th">9th Grade</option>
+                                <option value="10th">10th Grade</option>
+                                <option value="11th">11th Grade</option>
+                                <option value="12th">12th Grade</option>
+                                <option value="hs-grad">High School Graduate</option>
+                                <option value="some-college">Some College</option>
+                                <option value="assoc-voc">Associate Vocational</option>
+                                <option value="assoc-acdm">Associate Academic</option>
+                                <option value="bachelors">Bachelors</option>
+                                <option value="masters">Masters</option>
+                                <option value="prof-school">Professional School</option>
+                                <option value="doctorate">Doctorate</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="workclass"><i class="fas fa-building"></i> Workclass:</label>
+                            <select id="workclass" name="workclass" required>
+                                <option value="" disabled selected>Select Workclass</option>
+                                <option value="federal-gov">Federal Government</option>
+                                <option value="local-gov">Local Government</option>
+                                <option value="private">Private</option>
+                                <option value="self-emp-inc">Self-Employed (Incorporated)</option>
+                                <option value="self-emp-not-inc">Self-Employed (Not Incorporated)</option>
+                                <option value="state-gov">State Government</option>
+                                <option value="without-pay">Without Pay</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="occupation"><i class="fas fa-briefcase"></i> Occupation:</label>
+                            <select id="occupation" name="occupation" required>
+                                <option value="" disabled selected>Select Occupation</option>
+                                <option value="adm-clerical">Administrative Clerical</option>
+                                <option value="armed-forces">Armed Forces</option>
+                                <option value="craft-repair">Craft Repair</option>
+                                <option value="exec-managerial">Executive Managerial</option>
+                                <option value="farming-fishing">Farming Fishing</option>
+                                <option value="handlers-cleaners">Handlers Cleaners</option>
+                                <option value="machine-op-inspct">Machine Operator Inspector</option>
+                                <option value="other-service">Other Service</option>
+                                <option value="priv-house-serv">Private House Service</option>
+                                <option value="prof-specialty">Professional Specialty</option>
+                                <option value="protective-serv">Protective Service</option>
+                                <option value="sales">Sales</option>
+                                <option value="tech-support">Tech Support</option>
+                                <option value="transport-moving">Transport Moving</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hoursPerWeek"><i class="fas fa-clock"></i> Hours per Week:</label>
+                            <input type="number" id="hoursPerWeek" name="hoursPerWeek" min="1" max="168" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nativeCountry"><i class="fas fa-flag"></i> Native Country:</label>
+                            <select id="nativeCountry" name="nativeCountry" required>
+                                <option value="" disabled selected>Select Native Country</option>
+                                <option value="cambodia">Cambodia</option>
+                                <option value="canada">Canada</option>
+                                <option value="china">China</option>
+                                <option value="columbia">Columbia</option>
+                                <option value="cuba">Cuba</option>
+                                <option value="dominican-republic">Dominican Republic</option>
+                                <option value="ecuador">Ecuador</option>
+                                <option value="el-salvador">El Salvador</option>
+                                <option value="england">England</option>
+                                <option value="france">France</option>
+                                <option value="germany">Germany</option>
+                                <option value="greece">Greece</option>
+                                <option value="guatemala">Guatemala</option>
+                                <option value="haiti">Haiti</option>
+                                <option value="holand-netherlands">Holland-Netherlands</option>
+                                <option value="honduras">Honduras</option>
+                                <option value="hong">Hong Kong</option>
+                                <option value="hungary">Hungary</option>
+                                <option value="india">India</option>
+                                <option value="iran">Iran</option>
+                                <option value="ireland">Ireland</option>
+                                <option value="italy">Italy</option>
+                                <option value="jamaica">Jamaica</option>
+                                <option value="japan">Japan</option>
+                                <option value="laos">Laos</option>
+                                <option value="mexico">Mexico</option>
+                                <option value="nicaragua">Nicaragua</option>
+                                <option value="outlying-us(guam-usvi-etc)">Outlying US (Guam, USVI, etc)</option>
+                                <option value="peru">Peru</option>
+                                <option value="philippines">Philippines</option>
+                                <option value="poland">Poland</option>
+                                <option value="portugal">Portugal</option>
+                                <option value="puerto-rico">Puerto Rico</option>
+                                <option value="scotland">Scotland</option>
+                                <option value="south">South</option>
+                                <option value="taiwan">Taiwan</option>
+                                <option value="thailand">Thailand</option>
+                                <option value="trinadad&tobago">Trinidad & Tobago</option>
+                                <option value="united-states">United States</option>
+                                <option value="vietnam">Vietnam</option>
+                                <option value="yugoslavia">Yugoslavia</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-magic"></i> Predict Salary
+                    </button>
+                </form>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    Processing your data...
+                </div>
+
+                <div id="result" class="result"></div>
+            </div>
+
+            <div class="analytics-section">
+                <div class="analytics-card fade-in">
+                    <h3><i class="fas fa-chart-bar icon"></i> Model Performance</h3>
+                    <p>Our XGBoost model demonstrates exceptional accuracy with comprehensive confusion matrix analysis showing precision across different salary ranges.</p>
+                    <div class="chart-container">
+                        <img src="/static/confusion_matrix.png" alt="Confusion Matrix - Model Accuracy Analysis">
+                    </div>
+                </div>
+
+                <div class="analytics-card fade-in">
+                    <h3><i class="fas fa-star icon"></i> Feature Importance</h3>
+                    <p>Key factors influencing salary predictions include education level, work hours, occupation type, and demographic variables, ranked by their predictive power.</p>
+                    <div class="chart-container">
+                        <img src="/static/feature.png" alt="Feature Importance - Key Predictive Factors">
+                    </div>
+                </div>
+
+                <div class="analytics-card fade-in">
+                    <h3><i class="fas fa-chart-area icon"></i> ROC Analysis</h3>
+                    <p>Receiver Operating Characteristic curve demonstrating the model's ability to distinguish between salary classes with high sensitivity and specificity.</p>
+                    <div class="chart-container">
+                        <img src="/static/area.png" alt="ROC Curve - Model Classification Performance">
+                    </div>
+                </div>
+
+                <div class="analytics-card fade-in">
+                    <h3><i class="fas fa-bullseye icon"></i> Precision & Recall</h3>
+                    <p>Detailed precision-recall metrics showcasing the model's balanced performance in correctly identifying both high and low salary predictions.</p>
+                    <div class="chart-container">
+                        <img src="/static/recall.png" alt="Precision-Recall Analysis - Prediction Accuracy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            // Show loading state
+            loading.classList.add('show');
+            result.className = 'result';
+            result.textContent = '';
+
+            const formData = {
+                age: document.getElementById('age').value,
+                workclass: document.getElementById('workclass').value,
+                education: document.getElementById('education').value,
+                maritalStatus: document.getElementById('maritalStatus').value,
+                occupation: document.getElementById('occupation').value,
+                relationship: document.getElementById('relationship').value,
+                race: document.getElementById('race').value,
+                gender: document.getElementById('gender').value,
+                hoursPerWeek: document.getElementById('hoursPerWeek').value,
+                nativeCountry: document.getElementById('nativeCountry').value
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading
+                loading.classList.remove('show');
+                
+                if (response.ok) {
+                    result.className = 'result success';
+                    const icon = data.salary === '>50K' ? '💰' : '📊';
+                    result.innerHTML = `
+                        <div>
+                            <div style="font-size: 2rem; margin-bottom: 10px;">${icon}</div>
+                            <div>Predicted Salary Range: <strong>${data.salary}</strong></div>
+                            <div style="font-size: 0.9rem; margin-top: 8px; opacity: 0.9;">
+                                ${data.salary === '>50K' ? 'High earner category' : 'Standard salary range'}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Prediction failed');
+                }
+            } catch (error) {
+                loading.classList.remove('show');
+                result.className = 'result error';
+                result.innerHTML = `
+                    <div>
+                        <div style="font-size: 1.5rem; margin-bottom: 10px;">⚠️</div>
+                        <div>Error: Could not get prediction</div>
+                        <div style="font-size: 0.9rem; margin-top: 8px;">Please check your input and try again</div>
+                    </div>
+                `;
+                console.error('Error:', error);
+            }
+        });
+
+        // Add smooth scrolling and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.analytics-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationDelay = '0.2s';
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            });
+
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
